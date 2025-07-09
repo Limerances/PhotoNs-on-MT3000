@@ -1,0 +1,718 @@
+#ifdef HALO_FOF
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <mpi.h>
+#include <omp.h>
+#include <math.h>
+#include "stdint.h"
+#include <unistd.h>
+#include <algorithm>
+
+#include "photoNs.h"
+#include "utility.h"
+#include "halofind.h"
+#ifdef HDF5
+#include "hdf5_output.h"
+#endif
+
+#define TXT
+extern "C" void boundary_analysis(cpuType width_bnd);
+extern "C" void particle_combine_analysis();
+extern "C" void gravity_cln_analysis();
+extern "C" void get_local_size_(int*, int*, int*, int*, int*);
+extern "C" void decomp_2d_free();
+
+using namespace std;
+
+int* idxmap;
+
+void halo_massfunc_output(GroupCatalog* grpcat, char data_path[], int timestamp) ;
+
+void halo_massfunc_output(GroupCatalog* grpcat, char data_path[], int timestamp) {
+
+	unsigned long m;
+	unsigned long mcnt_tot[NTAB_MF];
+	double mrange[NTAB_MF];
+	double scale = 1.25;
+	double mass_min = (20.0 * MASSPART * 1.0e10) / sqrt(scale);
+	halo_mass_func(grpcat->group, grpcat->group_number, mcnt_tot, mrange, mass_min, scale, MASSPART);
+
+	if ( 0 == PROC_RANK ) {
+
+		FILE *fmf;
+		char fhalo[200];
+		sprintf(fhalo, "%s/massfunc_fof_%03d", data_path, timestamp);
+		if(!(fmf = fopen(fhalo, "w"))) {
+			LOG(0, "cannot open file %s", fmf);
+			exit(0);
+		}
+
+		double dlog_mass = (log10(mrange[1]) - log10(mrange[0]));
+		for (m=0; m<NTAB_MF-1; m++) {
+			fprintf(fmf, "%e %e %lld\n", (0.5*( mrange[m]+mrange[m+1])) ,( mcnt_tot[m]/pow(BOXSIZE*0.001, 3)/dlog_mass), mcnt_tot[m] );
+		}
+		fclose(fmf);
+
+	}
+}
+
+
+GroupCatalog* halofind(double redshift, int min_npart_in_halo, double link_length, cpuType width_bnd, int timestamp) {
+	GroupCatalog* grpcat = new GroupCatalog;
+	if (!COM_DOM) {
+		return grpcat;
+		LOG(2, "[%d] no particles and then no need to find halos", PROC_RANK);
+	}
+	int ntxyz[3] = {1, 1, 1};
+	int NTiles = ntxyz[0] * ntxyz[1] * ntxyz[2];
+	double t0 = dtime();
+	FOFHaloFinder<Body>* fofHF[256];
+	if (NTiles > 256) {
+		LOG(0, "too much tasks.");
+		exit(0);
+	}
+
+	int mesh_low[3], mesh_high[3];
+	float dx = BOXSIZE / NSIDEMESH;
+	int nbnd = ceil(width_bnd / dx);
+	mesh_low[0] = dom_grp_mesh_start[dom_grp_rank] - nbnd;
+	mesh_low[1] = BOX0L / dx - nbnd; 
+	mesh_low[2] = BOX1L / dx - nbnd; 
+	mesh_high[0] = dom_grp_mesh_end[dom_grp_rank] + nbnd;
+	mesh_high[1] = BOX0H / dx + nbnd; 
+	mesh_high[2] = BOX1H / dx + nbnd; 
+
+	int nth = omp_get_max_threads();
+	LOG(1, "[%d] FOF: openmp num of threads %d", PROC_RANK, min(nth, NTiles));
+#pragma omp parallel for num_threads(nth)
+	for (int i=0; i<NTiles; ++i) {
+		int mesh_l[3], mesh_h[3];
+		mesh_decomp(i, ntxyz, nbnd, mesh_low, mesh_high, mesh_l, mesh_h);
+		LOG(3, "[%d] (%d) (%d %d %d) (%d %d %d)", PROC_RANK, i, mesh_l[0], mesh_l[1], mesh_l[2], mesh_h[0], mesh_h[1], mesh_h[2]);
+		fofHF[i] = new FOFHaloFinder<Body>(part, NPART, NPART_TOTAL, BOXSIZE, NSIDEMESH, PROC_RANK, 
+				mesh_l, mesh_h, i, nbnd);
+		fofHF[i]->fof(redshift, min_npart_in_halo, link_length, timestamp);
+	}
+	double t1 = dtime();
+	LOG(2, "[%d] FOF time %lf", PROC_RANK, t1 - t0);
+
+	// gather groups
+	grpcat->group_number = 0;
+	for (int i=0; i<NTiles; ++i) {
+		grpcat->group_number += fofHF[i]->num_group;
+	}
+	grpcat->group = new Group[grpcat->group_number];
+	if (grpcat->group == NULL) {
+		LOG(0, "[%d] error grpcat->group malloc", PROC_RANK);
+		exit(0);
+	}
+
+	double rad_max=0.0;
+	unsigned long n = 0;	
+	for (int i=0; i<NTiles; ++i) {
+		for (int j=0; j<fofHF[i]->num_group; ++j) {
+			grpcat->group[n].npart = fofHF[i]->Grps[j].npart;
+			grpcat->group[n].center[0] = fofHF[i]->Grps[j].center[0];
+			grpcat->group[n].center[1] = fofHF[i]->Grps[j].center[1];
+			grpcat->group[n].center[2] = fofHF[i]->Grps[j].center[2];
+			grpcat->group[n].pidx = fofHF[i]->Grps[j].pidx;
+#ifdef TEST_RADIUS_FOF
+			int k;
+			for (k=0; k<grpcat->group[n].npart; k++ ) {
+				int ip = grpcat->group[n].pidx[k];
+				double dx = grpcat->group[n].center[0] - part[ip].pos[0];
+				double dy = grpcat->group[n].center[1] - part[ip].pos[1];
+				double dz = grpcat->group[n].center[2] - part[ip].pos[2];
+				double rad = sqrt(dx*dx + dy*dy + dz*dz);
+				if (rad > rad_max) rad_max = rad;
+			}
+#endif
+			++n;
+		}
+		delete fofHF[i];
+	}
+
+#ifdef TEST_RADIUS_FOF
+//	if (rad_max > width_bnd)
+	{
+		printf(" TEST_RADIUS_FOF :  rad_max = %lf and width_bnd = %f\n", rad_max, width_bnd);
+	}
+#endif
+
+
+	double t2 = dtime();
+	LOG(2, "[%d] FOF Gather time %lf", PROC_RANK, t2 - t1);
+#ifdef HALO_FOF_SORT
+	qsort(grpcat->group, grpcat->group_number, sizeof(Group), compare_group);
+#endif
+	double t3 = dtime();
+	LOG(2, "[%d] FOF sort time %lf", PROC_RANK, t3 - t2);
+	LOG(2, "[%d] Num of total groups %lld, time %lf", PROC_RANK, grpcat->group_number, t3 - t0);
+	if (grpcat->group_number > 0)
+		LOG(2, "[%d] Largest Group NPART %d", PROC_RANK, grpcat->group[0].npart);
+
+	return grpcat;	 
+}
+
+void halo_output(GroupCatalog* grpcat, const char* data_path, int timestamp) {
+	unsigned long n, m;
+	double t0 = dtime();
+	char fhalo[128];
+	int num_group = grpcat->group_number;
+	if (COM_DOM) {
+		FILE *fha;
+		make_dir(data_path, "halocat", timestamp);
+		sprintf(fhalo, "%s/halocat_%03d/halocat_%d.%d", data_path, timestamp, timestamp, PROC_RANK);
+		if(!(fha = fopen(fhalo, "w"))) {
+			LOG(0, "cannot open file %s", fhalo);
+			exit(0);
+		}
+#ifdef TXT
+		fprintf(fha, "%u\n", grpcat->group_number);
+#else
+		fwrite( &grpcat->group_number, sizeof(unsigned long), 1, fha );
+#endif
+		for (n=0; n<num_group; n++) {
+			//	fprintf(fha, "%d %lf %lf %lf", grp[n].npart,  grp[n].center[0], grp[n].center[1], grp[n].center[2]);
+			int np_halo = grpcat->group[n].npart;
+			float px = grpcat->group[n].center[0];
+			float py = grpcat->group[n].center[1];
+			float pz = grpcat->group[n].center[2];
+
+#ifdef TXT
+			fprintf(fha, "%d ", np_halo);
+			fprintf(fha, "%lf ", px);
+			fprintf(fha, "%lf ", py);
+			fprintf(fha, "%lf\n", pz);
+#else
+			fwrite( &np_halo, sizeof(int), 1, fha );
+			fwrite( &px, sizeof(float), 1, fha );
+			fwrite( &py, sizeof(float), 1, fha );
+			fwrite( &pz, sizeof(float), 1, fha );
+#endif
+
+		}
+		fclose(fha);
+		LOG(2, "[%d] halo writing time %lf", PROC_RANK, dtime() - t0);
+	}
+	
+//	halo_massfunc_output(grpcat, data_path, timestamp) ;
+}
+
+#if 0
+template <typename Body_T>
+subGroupCatalog* subfind_find_subhalos(GroupCatalog* grpcat, SIMInfo<Body_T> um, float link_length) {
+	subGroupCatalog* subgrpcat = new subGroupCatalog;
+	if (grpcat->group_number <=0) {
+		return subgrpcat;
+		LOG(2, "[%d] no halo and then no need to find subhalos", um.PROC_RANK);
+	}
+	double t0 = dtime();
+	unsigned long npart = um.npart, np_ingrp = 0;
+	for (unsigned long i=0; i<grpcat->group_number; ++i) {
+		Group* grp = &grpcat->group[i];
+		np_ingrp += grp->pidx.size();
+	}
+	SFInfo* sfprt = (SFInfo*)mymalloc(sizeof(SFInfo) * np_ingrp, 255);
+	if (sfprt == NULL ) {
+		LOG(0, "[%d] error sfpart malloc in subhalo_finder.cc", um.PROC_RANK);
+		exit(0);
+	}
+
+	idxmap = (int*)mymalloc(sizeof(int) * npart, 256);	
+	for (unsigned long i=0; i<npart; ++i) {
+		idxmap[i] = -1;
+	}
+	unsigned long k = 0; 
+	for (unsigned long i=0; i<grpcat->group_number; ++i) {
+		Group* grp = &grpcat->group[i];
+		for (int j=0; j<grp->pidx.size(); ++j) {
+			sfprt[k].pidx = grp->pidx[j];
+			sfprt[k].in_group = (int)i;
+			sfprt[k].DM_Hsml = 0.;
+			sfprt[k].DM_Density = 0.;
+			idxmap[grp->pidx[j]] = k;
+			k++;
+		}
+	}
+
+	if (k != np_ingrp) {
+		LOG(0, "[%d] error sfprt", um.PROC_RANK);
+		exit(0);
+	}
+
+	SubFind<Body>* subfind = new SubFind<Body>(um);
+
+	subfind->subfind_density(sfprt, np_ingrp, link_length);	
+
+	double tt0 = dtime();
+	int nth = omp_get_max_threads();
+	subGroupCatalog* sgrpcats = new subGroupCatalog[nth];
+	LOG(1, "[%d] subHalo: openmp num of threads %d", um.PROC_RANK, nth);
+#pragma omp parallel for num_threads(nth) schedule(dynamic,1)
+	for (unsigned long i=0; i<grpcat->group_number; ++i) {
+		Group* grp = &grpcat->group[i];
+//		if (grp->npart < 60)
+//			continue;
+		int ith = omp_get_thread_num();
+		subfind->subfind_process_single_group(sgrpcats[ith], sfprt, grp->pidx, link_length, grp);
+
+	}
+	double t1 = dtime();
+	LOG(2, "[%d] subhalo finding time %lf (group process time %lf)", um.PROC_RANK, t1 - t0, t1 - tt0);
+
+	// gather groups
+	for (int i=0; i<nth; ++i) {
+		subgrpcat->subgrp_number += sgrpcats[i].subgrp_number;
+		subgrpcat->subgrps.insert(subgrpcat->subgrps.end(), sgrpcats[i].subgrps.begin(), sgrpcats[i].subgrps.end());
+	}
+	delete []sgrpcats;
+	double t2 = dtime();
+#ifdef SUBHALO_SORT
+	qsort(&subgrpcat->subgrps[0], subgrpcat->subgrp_number, sizeof(subGroup), compare_subgroup);
+#endif
+	double t3 = dtime();
+	LOG(2, "[%d] subHalo sort time %lf", um.PROC_RANK, t3 - t2);
+	LOG(2, "[%d] subHalo Gather time %lf", um.PROC_RANK, t2 - t1);
+	LOG(2, "[%d] Num of total subHalos %lld time %lf", um.PROC_RANK, subgrpcat->subgrp_number, t3 - t0);
+	if (subgrpcat->subgrp_number > 0)
+		LOG(2, "[%d] Largest subHalo of group(%d) %lld (vel %lf %lf %lf)", um.PROC_RANK, 0, subgrpcat->subgrps[0].Len, subgrpcat->subgrps[0].vel[0], subgrpcat->subgrps[0].vel[1], subgrpcat->subgrps[0].vel[2]);
+/*	for (int i=0; i<10; ++i)
+		LOG(2, "[%d] Largest subHalo of group(%d) %lld (vel %lf %lf %lf)", um.PROC_RANK, i, subgrpcat->subgrps[i].Len, subgrpcat->subgrps[i].vel[0], subgrpcat->subgrps[i].vel[1], subgrpcat->subgrps[i].vel[2]);
+*/
+	myfree(sfprt, 255);
+	myfree(idxmap, 256);
+	return subgrpcat;
+
+}
+
+void subhalo_output(subGroupCatalog* subgrpcat, const char* data_path, int timestamp) {
+	unsigned long n, m;
+	int num_subgrp = subgrpcat->subgrp_number;
+
+	double t0 = dtime();
+
+	char fsubhalo[128];
+	FILE *fha;
+	make_dir(data_path, "subhalocat", timestamp);
+	sprintf(fsubhalo, "%s/subhalocat_%03d/subhalocat_%d.%d", data_path, timestamp, timestamp, PROC_RANK);
+	if(!(fha = fopen(fsubhalo, "w"))) {
+		LOG(0, "cannot open file %s", fsubhalo);
+		exit(0);
+	}
+#ifdef TXT
+	fprintf(fha, "%u\n", subgrpcat->subgrp_number);
+#else
+	fwrite( &subgrpcat->subgrp_number, sizeof(unsigned long), 1, fha );
+#endif
+	for (n=0; n<num_subgrp; n++) {
+		subGroup* subgrp = &subgrpcat->subgrps[n];
+#ifdef TXT
+		fprintf(fha, "%d ", subgrp->in_group);
+		fprintf(fha, "%d ", subgrp->Len);
+		fprintf(fha, "%lf ", subgrp->pos[0]);
+		fprintf(fha, "%lf ", subgrp->pos[1]);
+		fprintf(fha, "%lf ", subgrp->pos[2]);
+		fprintf(fha, "%lf ", subgrp->vel[0]);
+		fprintf(fha, "%lf ", subgrp->vel[1]);
+		fprintf(fha, "%lf ", subgrp->vel[2]);
+		fprintf(fha, "%lf\n", subgrp->SubVmaxRad);
+#else
+		fwrite( &subgrp->in_group, sizeof(int), 1, fha );
+		fwrite( &subgrp->Len, sizeof(int), 1, fha );
+		fwrite( &subgrp->pos, sizeof(float), 3, fha );
+		fwrite( &subgrp->vel, sizeof(float), 3, fha );
+		fwrite( &subgrp->SubVmaxRad, sizeof(int), 1, fha );
+#endif
+	}
+	fclose(fha);
+
+}
+
+template <typename Body_T>
+void fill_simulation_info(SIMInfo<Body_T>& um, float redshift, int group_min_len, float link_length) {
+	um.part = part;
+	um.npart = NPART;
+	um.N_SIDEMESH = NSIDEMESH;
+	um.PROC_RANK = PROC_RANK;
+	um.PROC_SIZE = PROC_SIZE;
+	um.NPART_TOTAL = NPART_TOTAL; 
+	um.MASSPART = MASSPART; 
+	um.BOXSIZE = BOXSIZE; 
+	um.Hubble0 = Hubble0; 
+	um.OmegaM0 = OmegaM0; 
+	um.OmegaX0 = OmegaX0; 
+	um.redshift = redshift;
+	um.fof_group_min_len = group_min_len;
+	um.fof_linklength = link_length;
+}
+
+
+double subfind_get_overdensity_value(int type, double ascale)
+{
+	double z1 = 1 / ascale ;
+	double z2 = z1 * z1;
+	double z3 = z2 * z1;
+	double omegaz = OmegaM0 * z3 / (OmegaM0 * z3 + (1 - OmegaM0 - OmegaX0) * z2 + OmegaX0);
+	double x = omegaz - 1;
+
+	if(type == 0)
+	{
+		return 200.0;  // Mean200
+	}
+	else if(type == 1)
+	{  // Generalized Tophat overdensity
+		return (18 * M_PI * M_PI + 82 * x - 39 * x * x) / omegaz;
+	}
+	else if(type == 2)
+	{
+		return 200.0 / omegaz;  // DeltaCrit200
+	}
+	else if(type == 3)
+	{
+		return 500.0 / omegaz;  // DeltaCrit500
+	}
+	else
+		printf("can't be");
+
+	return 0;
+}
+
+void __compute_halo_properties(double redshift, GroupCatalog* grpcat, subGroupCatalog *subgrpcat) { 
+	int n;
+	double Ascale = 1.0/(1.0+redshift);
+	int first_sub = 0;
+	for (n=0; n<grpcat->group_number; n++) {
+		int nsubhalo = grpcat->group[n].nsubhalo;
+		if ( nsubhalo > 0) {
+			grpcat->group[n].center[0] = subgrpcat->subgrps[first_sub].pos[0];
+			grpcat->group[n].center[1] = subgrpcat->subgrps[first_sub].pos[1];
+			grpcat->group[n].center[2] = subgrpcat->subgrps[first_sub].pos[2];
+			first_sub += nsubhalo;
+		}
+	}	
+	double r200;
+	double m200;
+	// todo 
+	double rhoback = 3.0 * OmegaM0 * Hubble0 * Hubble0 / (8.0 * M_PI * GravConst);
+	
+	double rhomean = NPART_TOTAL * MASSPART / (BOXSIZE * BOXSIZE * BOXSIZE);
+
+	for(int rep = 0; rep < 4; rep+=2) /* repeat for all four overdensity values */
+	{
+		int Nso = 0;
+		int Ngroups = grpcat->group_number;
+		double Right, Left, overdensity;
+		for(int i = 0; i < Ngroups; i++)
+		{
+
+			m200 =  grpcat->group[i].npart * MASSPART; 
+	//		int nsubhalo = grpcat->group[i].nsubhalo;
+			int n, p;
+			double mc[3];
+			mc[0] = grpcat->group[i].center[0];
+			mc[1] = grpcat->group[i].center[1];
+			mc[2] = grpcat->group[i].center[2];
+
+
+			Right = 0.0;	
+				for (p=0; p<grpcat->group[i].npart; p++) {
+					double r2 = 0.0;
+					int ip = grpcat->group[i].pidx[p];
+					double dx = mc[0] - part[ip].pos[0]; 
+					double dy = mc[1] - part[ip].pos[1]; 
+					double dz = mc[2] - part[ip].pos[2];
+ 
+					r2 += dx * dx;
+					r2 += dy * dy;
+					r2 += dz * dz;
+
+					if (r2 >  Right)
+						Right = r2;
+				}
+			Right = sqrt(Right);
+
+
+		//	double rguess = pow(GravConst * m200 / (100 * Hubble0 * Hubble0), 1.0 / 3);
+			Left  = 0.0;
+			r200 = 0.5 * (Left + Right);
+
+			int iter = 0;
+			int ntot = 1;
+			double delta = subfind_get_overdensity_value(rep, Ascale);
+			do {
+			//	overdensity = m200 / (4.0*M_PI/3.0*r200*r200*r200)/rhoback;
+				overdensity = m200 / (4.0*M_PI/3.0*r200*r200*r200)/rhomean;
+				if((Right - Left) > 1.0e-4 * Left) {
+					if(overdensity > delta)
+						Left = r200;
+					else
+						Right = r200;
+
+					r200 = 0.5 * (Left + Right);
+
+					iter++;
+				}
+				else 
+					ntot = 0;
+
+				m200 = 0.0;
+				double r200sq = r200 * r200;
+
+				for (p=0; p<grpcat->group[i].npart; p++) {
+					double r2 = 0.0;
+					int ip = grpcat->group[i].pidx[p];
+					double dx = mc[0] - part[ip].pos[0]; 
+					double dy = mc[1] - part[ip].pos[1]; 
+					double dz = mc[2] - part[ip].pos[2];
+ 
+					r2 += dx * dx;
+					r2 += dy * dy;
+					r2 += dz * dz;
+
+					if (r2 < r200sq)
+						m200 += MASSPART;
+				}
+
+//				overdensity = m200 / (4.0 * M_PI / 3.0 * r200 * r200 * r200) / rhoback;
+
+			} while(ntot && iter < 20);
+	
+#ifdef HALOPROPERTY
+			if (rep == 0)
+				grpcat->group[i].Mmean200 = (float)m200;
+
+			if (rep == 2)
+				grpcat->group[i].Mcrit200 = (float)m200;
+#endif
+		}
+
+	}
+	//////////////////////////////
+
+}
+
+int cmp_rad(const void *rp1, const void *rp2) { return ( *(double*)rp1 > *(double*) rp2 ) ? 1 : 0; }
+
+
+void compute_halo_properties(double redshift, GroupCatalog* grpcat, subGroupCatalog *subgrpcat) { 
+	int n, p, i;
+	double Ascale = 1.0/(1.0+redshift);
+	int first_sub = 0;
+	
+	double delta_m200 = subfind_get_overdensity_value(0, Ascale);
+	double delta_toph = subfind_get_overdensity_value(1, Ascale);
+	double delta_c200 = subfind_get_overdensity_value(2, Ascale);
+	double meandens = (double) NPART_TOTAL / (BOXSIZE * BOXSIZE * BOXSIZE);
+	double dens_m200 = delta_m200 * meandens; 
+	double dens_c200 = delta_c200 * meandens; 
+	double dens_toph = delta_toph * meandens; 
+
+	double r_m200, r_c200, r_toph, fact = 4.0*M_PI/3.0;
+
+	int Ngroups = grpcat->group_number;
+	for (i=0; i<Ngroups; i++) {
+		int nsubhalo = grpcat->group[i].nsubhalo;
+		if ( nsubhalo > 0) {
+			grpcat->group[i].center[0] = subgrpcat->subgrps[first_sub].pos[0];
+			grpcat->group[i].center[1] = subgrpcat->subgrps[first_sub].pos[1];
+			grpcat->group[i].center[2] = subgrpcat->subgrps[first_sub].pos[2];
+			first_sub += nsubhalo;
+		}	
+
+	
+		double mc[3];
+		mc[0] = grpcat->group[i].center[0];
+		mc[1] = grpcat->group[i].center[1];
+		mc[2] = grpcat->group[i].center[2];
+
+
+		int npart_inhalo = grpcat->group[i].npart;
+		double *radp = (double*) malloc( sizeof(double) * npart_inhalo );
+		double r_max = 0.0;
+		double dx[3];
+		for (p=0; p<npart_inhalo; p++) {
+			double r2 = 0.0;
+			int ip = grpcat->group[i].pidx[p];
+			dx[0] = mc[0] - part[ip].pos[0]; 
+			dx[1] = mc[1] - part[ip].pos[1]; 
+			dx[2] = mc[2] - part[ip].pos[2];
+ 
+			r2 += dx[0] * dx[0];
+			r2 += dx[1] * dx[1];
+			r2 += dx[2] * dx[2];
+					
+			radp[p] = r2;
+			if (radp[p] > r_max) r_max = radp[p];
+		}
+		r_max = sqrt(r_max);
+		for (p=0; p<npart_inhalo; p++) {
+			radp[p] = sqrt(radp[p]);
+		}
+
+		qsort(radp, npart_inhalo, sizeof(double), cmp_rad );
+
+		if (radp[0] > radp[1] || radp[1] > radp[2]) { printf("error in property"); exit(0); }
+
+		int fm2=1;
+		int fc2=1;
+		int fth=1;
+		double m_m200, m_c200, m_tophat;
+		for (p=0; p<npart_inhalo; p++) {
+			double vol = fact * radp[p] * radp[p] * radp[p] ;
+			if ( fm2 && vol*dens_m200 > MASSPART * p ) { fm2 = 0; r_m200 = radp[p]; m_m200 = MASSPART*p;}
+			if ( fc2 && vol*dens_c200 > MASSPART * p ) { fc2 = 0; r_c200 = radp[p]; m_c200 = MASSPART*p;}
+			if ( fth && vol*dens_toph > MASSPART * p ) { fth = 0; r_toph = radp[p]; m_tophat=MASSPART*p;}
+
+		}
+
+	
+#ifdef HALOPROPERTY
+		grpcat->group[i].Mmean200 = (float)m_m200;
+		grpcat->group[i].Mcrit200 = (float)m_c200;
+#endif
+
+
+
+		free(radp);
+	}
+
+
+}
+
+void subhalo_massfunc_output(subGroupCatalog* subgrpcat, char data_path[], int timestamp) {
+
+	unsigned long m;
+	unsigned long mcnt_tot[NTAB_MF];
+	double mrange[NTAB_MF];
+	double scale = 1.25;
+	double mass_min = (20.0 * MASSPART * 1.0e10) / sqrt(scale);
+	subhalo_mass_func(&subgrpcat->subgrps[0], subgrpcat->subgrp_number, mcnt_tot, mrange, mass_min, scale, MASSPART);
+
+	if ( 0 == PROC_RANK ) {
+		char fsubhalo[200];
+		FILE *fmf;
+		sprintf(fsubhalo, "%s/massfunc_sub_%03d", data_path, timestamp);
+		if(!(fmf = fopen(fsubhalo, "w"))) {
+			LOG(0, "cannot open file %s", fmf);
+			exit(0);
+		}
+		double dlog_mass = (log10(mrange[1]) - log10(mrange[0]));
+		for (m=0; m<NTAB_MF-1; m++) {
+			fprintf(fmf, "%e %e %lld\n", (0.5*( mrange[m]+mrange[m+1])) ,( mcnt_tot[m]/pow(BOXSIZE*0.001, 3)/dlog_mass), mcnt_tot[m] );
+		}
+		fclose(fmf);
+	}
+
+
+}
+
+
+#ifdef HDF5
+template <typename Body_T>
+void halo_subhalo_output(SIMInfo<Body_T> um, GroupCatalog* grpcat, subGroupCatalog* subgrpcat, int min_mostbound_npart, char* data_path, int timestamp) {
+	double t0 = dtime();
+
+	char fn[128];
+	make_dir(data_path, "halocat", timestamp);
+	sprintf(fn, "%s/halocat_%03d/halocat_%03d", data_path, timestamp, timestamp);
+	int file_id = SUDOM_RANK; 
+	int file_rank = dom_grp_rank;
+
+	hdf5_output(um, grpcat, subgrpcat, fn, file_id, file_rank, min_mostbound_npart);
+
+	halo_massfunc_output(grpcat, data_path, timestamp) ;
+
+	subhalo_massfunc_output(subgrpcat, data_path,  timestamp) ;
+
+	double t1 = dtime();
+	LOG(2, "[%d] halo and subhalo hdf5 writing time %lf", um.PROC_RANK, t1 - t0);
+
+}
+#endif
+
+extern "C" void analysis(double redshift, int min_npart_in_halo, double link_length, int timestamp) {
+	// get analysis boundary base on the width_bnd
+	cpuType width_bnd = 1687.5;
+
+	///qwang width_bnd
+//	width_bnd = 1000.0;
+//	width_bnd = 500.0; // 1e12 halo 
+	width_bnd = 3000.0;//620.0;
+//	width_bnd = 1600.0;//620.0;
+
+
+	FOF_WIDTH_BOUND = width_bnd;
+
+	boundary_analysis(width_bnd);	
+	// combine part with part_bnd
+	if (COM_DOM)	
+		particle_combine_analysis();
+
+	GroupCatalog* grpcat = halofind(redshift, min_npart_in_halo, link_length, width_bnd, timestamp);
+
+//	halo_output(grpcat, PathSnapshot, timestamp);
+	SIMInfo<Body> um;
+	fill_simulation_info(um, (float)redshift, min_npart_in_halo, link_length);
+	subGroupCatalog* subgrpcat = subfind_find_subhalos(grpcat, um, link_length);
+
+	//qwang
+	compute_halo_properties(redshift, grpcat, subgrpcat);
+
+	halo_subhalo_output(um, grpcat, subgrpcat, min_npart_in_halo, PathSnapshot, timestamp);
+
+	delete grpcat;
+//	subhalo_output(subgrpcat, PathSnapshot, timestamp);
+	delete subgrpcat;
+
+	// clean analysis boundary
+	gravity_cln_analysis();
+}
+#endif
+
+extern "C" void analysis_fof(double redshift, int min_npart_in_halo, double link_length, int timestamp) {
+	// get analysis boundary base on the width_bnd
+	cpuType width_bnd = 1687.5;
+
+	///qwang width_bnd
+//	width_bnd = 1000.0;
+//	width_bnd = 500.0; // 1e12 halo 
+	width_bnd = 3000.0;//620.0;
+	width_bnd = 2000.0;//620.0;
+	width_bnd = 600.0;//620.0;
+
+
+	FOF_WIDTH_BOUND = width_bnd;
+
+	boundary_analysis(width_bnd);	
+	// combine part with part_bnd
+	if (COM_DOM)	
+		particle_combine_analysis();
+
+	GroupCatalog* grpcat = halofind(redshift, min_npart_in_halo, link_length, width_bnd, timestamp);
+
+	halo_massfunc_output(grpcat, PathSnapshot, timestamp) ;
+	halo_output(grpcat, PathSnapshot, timestamp);
+
+
+//	SIMInfo<Body> um;
+//	fill_simulation_info(um, (float)redshift, min_npart_in_halo, link_length);
+//	subGroupCatalog* subgrpcat = subfind_find_subhalos(grpcat, um, link_length);
+
+	//qwang
+//	compute_halo_properties(redshift, grpcat, subgrpcat);
+
+//	halo_subhalo_output(um, grpcat, subgrpcat, min_npart_in_halo, PathSnapshot, timestamp);
+
+	delete grpcat;
+//	subhalo_output(subgrpcat, PathSnapshot, timestamp);
+//	delete subgrpcat;
+
+	// clean analysis boundary
+	gravity_cln_analysis();
+}
+
+#endif
+

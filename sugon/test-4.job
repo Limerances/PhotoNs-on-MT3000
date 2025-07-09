@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH -J demo
+#SBATCH -N 4
+#SBATCH --tasks-per-node=9
+###SBATCH -p debug
+#SBATCH -p normal
+###SBATCH -p long
+#SBATCH --exclusive
+#SBATCH -o ./log/log.%j
+#SBATCH -e ./log/err.%j
+#SBATCH --no-requeue
+
+#SBATCH --mem=100G
+#SBATCH --gres=dcu:4
+
+
+#SBATCH -x g05r3n14,g05r3n15,g05r3n16,g05r3n17
+
+
+##SBATCH -x j05r4n03,f01r1n16,f13r3n00,j03r4n11,g02r1n14,g01r2n18,f06r2n16,f06r2n17,f06r2n19,f06r3n01,g09r1n18,j02r4n06,k11r2n15,g05r4n12,j06r2n04,f06r2n13,f16r2n12,g01r2n17,j05r1n19,g01r2n19,j04r3n14,g11r4n09,i11r1n06,j07r1n05,h12r4n17,g10r2n10,g11r2n07,g05r1n01,f04r4n18,f11r4n12,g02r2n00,f15r1n17,f05r3n18,h14r3n11,f15r4n09,f07r4n10,j16r3n19,f02r1n01,i11r1n16,i11r1n00,f05r2n15,f13r3n12,j07r4n07
+
+echo "JOB_PARTITION=$SLURM_JOB_PARTITION"
+echo "NPROCS=$SLURM_NPROCS"
+echo "TASKS_PER_NODE=$SLURM_TASKS_PER_NODE"
+echo "JOB_CPUS_PER_NODE=$SLURM_JOB_CPUS_PER_NODE"
+echo "JOB_ID=$SLURM_JOB_ID"
+
+#srun hostname | sort | uniq -c | awk '{printf"%s slots=%s\n", $2,$1}' > hostfile
+scontrol show hostnames > hostfile
+gcc rankmap.c -o rmap.out
+./rmap.out
+
+module rm mathlib/fftw/3.3.8/double/gnu
+module rm mathlib/fftw/3.3.8/single/gnu
+NPROCS=$SLURM_NPROCS
+echo $NPROCS
+mpirun -np $NPROCS --hostfile ./hostfile --rankfile ./rankfile --leave-session-attached --mca plm_rsh_no_tree_spawn 1 --mca plm_rsh_num_concurrent $SLURM_JOB_NUM_NODES -mca routed_radix $SLURM_JOB_NUM_NODES -mca pml ucx --bind-to none -x UCX_TLS=self,sm,rc_x -x UCX_RC_VERBS_TIMEOUT=5000000.00us -x UCX_RC_VERBS_RNR_TIMEOUT=60000.00us ./app-run.sh
+#mpirun -np $NPROCS --hostfile ./hostfile --rankfile ./rankfile  -mca routed_radix $SLURM_JOB_NUM_NODES -mca pml ucx --bind-to none -x UCX_TLS=self,sm,rc_x -x UCX_RC_VERBS_TIMEOUT=5000000.00us -x UCX_RC_VERBS_RNR_TIMEOUT=60000.00us ./app-run.sh

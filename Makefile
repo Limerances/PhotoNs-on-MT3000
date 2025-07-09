@@ -1,0 +1,186 @@
+# this file is for general settings such as file list, etc.
+# machine-specific settings such as include paths and #defines are in Makefile.local
+
+CC   = mpicc
+FC   = mpif90
+GPUC = nvcc
+GPUC = hipcc
+#USE_HDF5 = 1
+
+ifeq ($(GPUC), hipcc)
+DEV_PATH = /public/software/compiler/dtk/dtk-21.10/
+#DEV_PATH = /opt/rocm/hip
+DEV_INC = -I$(DEV_PATH)/hip/include
+DEV_LIB = -L$(DEV_PATH)/hip/lib -lamdhip64 #-lhip_hcc
+#DEV_LIB = -L$(DEV_PATH)/hip/lib -lhip_hcc
+GPUCFILE = cpp
+
+OPTS   += -fPIC -DHIP_RTM
+P2PLIB = -lp2p_hip
+else
+#DEV_PATH = /public/software/compiler/cuda/10.2/
+DEV_PATH = /usr/local/cuda/
+DEV_INC = -I$(DEV_PATH)/include
+DEV_LIB = -L$(DEV_PATH)/lib64 -lcudart
+GPUCFILE = cu
+#DEVFLAGS = --default-stream per-thread
+endif 
+
+LFLAGS += -std=c++11
+CFLAGS += -std=c++11
+LIBS   += -lstdc++
+
+CFLAGS   += -O3# -g
+F90FLAGS += -O3# -g
+LFLAGS   += -fopenmp
+#LFLAGS   += -Wno-main
+#LFLAGS   += -nofor-main
+
+INC2DFFT += -I/public/home/wangqiao/local/2decomp_fft/include -I/public/home/wangqiao/local/fftw-3.3.8/include
+LIB2DFFT += -L/public/home/wangqiao/local/2decomp_fft/lib -L/public/home/wangqiao/local/fftw-3.3.8/lib
+#INC2DFFT += -I/public/home/tytest03/local/2decomp_fft/include -I/public/home/tytest03/local/fftw3_lib_new/include
+#LIB2DFFT += -L/public/home/tytest03/local/2decomp_fft/lib -L/public/home/tytest03/local/fftw3_lib_new/lib
+#INC2DFFT += -I/usr/include/2decomp_fft
+#LIB2DFFT += -L/usr/lib/2decomp_fft -L/usr/lib
+#INC2DFFT += -I/home/mengchen/download/2decomp_fft/include -I/usr/include
+#LIB2DFFT += -L/home/mengchen/download/2decomp_fft/lib -L/usr/lib
+
+SRCDIR    = src
+INCDIR	  = inc
+OBJDIR    = obj
+LIBDIR    = lib
+EXEDIR	  = ./run
+POPDIR	  = ./post
+EXE       = PhotoNs-GPU
+LIBS	 += -l2decomp_fft
+LIBS	 += -lfftw3 -lfftw3_threads -lfftw3f -lfftw3f_threads
+LIBS	 += -fopenmp
+
+OPTS	 += -DLONGSHORT
+OPTS	 += -DPERIODIC_CONDITION
+
+#OPTS	+= -DTEST_FLOAT
+OPTS    += -DINTXYZ
+
+####### mutual exclusion
+#OPTS     += -DINTRA_LB
+OPTS     += -DMTHKDTree
+####### mutual exclusion
+
+#OPTS	 += -DICPOTGRAD
+#OPTS	 += -DFIXEDSTEP
+
+OPTS     += -DGPUP2P
+OPTS     += -DSPI
+#OPTS     += -DSPI_T2
+#OPTS     += -DACT_OPT
+#OPTS     += -DACT_SYNC
+OPTS     += -DGPUCUTOFF
+#OPTS     += -DSAVE_MEM
+OPTS     += -DIOBLK
+#OPTS     += -DMESHOUT
+#OPTS     += -DGPU_DP
+#OPTS     += -DCPU_DP
+#OPTS     += -DCOMPRESS
+
+#OPTS	+= -DHALO_FOF
+#OPTS	+= -DHALO_FOF_SORT
+#OPTS	+= -DTEST_RADIUS_FOF
+#OPTS	+= -DSUBHALO
+#OPTS	+= -DSUBHALO_SORT
+#OPTS    += -DFOF_BND
+#OPTS    += -DHALOPROPERTY
+
+OPTS	+= -DPOW_SPEC
+#OPTS	+= -DPOW_SPEC_DAUB
+#OPTS   += -DLOGLEVEL=2
+#OPTS   += -DMEMLOG
+#OPTS   += -DTASKLOG
+#OPTS	+= -DPMONLY
+#OPTS	+= -DMOREINFO
+#OPTS	+= -DRECSTATS
+#OPTS   += -DJSPLIT
+
+#OPTS     += -DGADGETFILE
+OPTS     += -DIC_CORRECT_CIC
+OPTS     += -DPK_CORRECT_CIC
+
+
+#OPTS	 += -Wno-unused-but-set-variable -Wno-unused-variable 
+#OPTS	 += -Wno-unused-function -Wno-strict-aliasing -fopenmp
+
+#SOURCES	  = photoNs.c domains.c initial.c remotes.c toptree.c task.c
+#SOURCES	  = photoNs.c initial.c domains.c partmesh.c boundary.c cosmos.c snapshot.c gravity.c fmm.c operator.c icreator.c global.c step.c setparam.c powspec.c boundary_analysis.c memory.c tasklog.c schedule.c fmm_LB.c snap_gdt.c
+
+SOURCES	  = photoNs.c initial.c domains.c partmesh.c boundary.c cosmos.c snapshot.c gravity.c fmm.c operator.c icreator.c global.c step.c setparam.c powspec.c memory.c tasklog.c schedule.c snap_gdt.c boundary_analysis.c
+CONV2D	  = data_prec.f90 conv.f90 icgrad.f90 powsk.f90
+SOURCEDEV = gpu_entry.$(GPUCFILE)
+#SOURCESCPP = mbtree.cc fof.cc subfind.cc halofind.cc utility.cc
+SOURCESCPP = mbtree.cc utility.cc
+
+ifeq ($(USE_HDF5), 1)
+OPTS     += -DHDF5
+SOURCESCPP += hdf5_utils.cc hdf5_output.cc
+#INCLUDES += -I/public/home/wangqiao/local/include
+#LIBS   += -L/public/home/wangqiao/local/lib -lhdf5
+LIBS   += -L/usr/lib/hdf5 -lhdf5
+INCLUDES += -I/usr/include/hdf5
+endif
+
+
+OBJECTS	  = $(patsubst %.c, $(OBJDIR)/%.o,$(SOURCES))
+OBJFORT	  = $(patsubst %.f90, $(OBJDIR)/%.o,$(CONV2D))
+OBJDEV = $(patsubst %.$(GPUCFILE), $(OBJDIR)/%.o,$(SOURCEDEV))
+OBJCPP = $(patsubst %.cc, $(OBJDIR)/%.o,$(SOURCESCPP))
+
+exe: $(OBJECTS) $(OBJFORT) $(OBJCPP) $(OBJDEV) 
+	@mkdir -p $(EXEDIR)
+	$(FC) $(LFLAGS) $(OBJDIR)/*.o $(LIBS) -L$(LIBDIR) $(P2PLIB) $(LIB2DFFT) $(DEV_LIB)  -o $(EXEDIR)/$(EXE)
+
+$(OBJDIR)/%.o:  $(SRCDIR)/%.cc
+	@mkdir -p $(OBJDIR)
+	$(CC) -c $(CFLAGS) $(OPTS) $(INCLUDES) $(LIBS)  -I$(INCDIR) -o "$@" "$<"
+
+$(OBJDIR)/%.o:  $(SRCDIR)/%.$(GPUCFILE)
+	@mkdir -p $(OBJDIR)
+	$(GPUC) -c -I$(INCDIR) $(OPTS) $(CFLAGS) $(DEVFLAGS) -o "$@" "$<" 
+ifeq ($(GPUC), hipcc)
+	@mkdir -p $(LIBDIR)
+	$(GPUC) -shared "obj/gpu_entry.o" -o $(LIBDIR)/libp2p_hip.so $(CFLAGS) --amdgpu-target=gfx906
+endif 
+
+$(OBJDIR)/%.o:  $(SRCDIR)/%.c
+	@mkdir -p $(OBJDIR)
+	$(CC) -c $(CFLAGS) $(OPTS) $(INCLUDES) $(LIBS) -I$(INCDIR) -o "$@" "$<"
+
+$(OBJDIR)/%.o:  $(SRCDIR)/%.f90 
+	$(FC) -c $(F90FLAGS) $(OPTS) $(INC2DFFT) $(LIBS) -cpp -o "$@" "$<"
+
+.PHONY: demo
+demo:
+	cd $(EXEDIR); date;\
+	CUDA_VISIBLE_DEVICES=0,1 OMP_NUM_THREADS=1 mpirun --oversubscribe -np 72 ./$(EXE)  ; date
+#	CUDA_VISIBLE_DEVICES="MIG-c178356c-c10f-5ef0-8dfc-99776f9c20bc,MIG-323eaa72-5b4d-5d90-8ca4-d9d589eba999,MIG-e0af6d5a-4089-5224-bb09-a12ba43cf5b5,MIG-a1ca833a-0f17-5696-85c8-c01780d30908"
+##	mpirun -np 64 ./$(EXE)  
+##	mpirun -np 8 ./$(EXE) ../demo/lcdm1.run
+
+
+.PHONY: d16
+d16:
+	cd $(EXEDIR); date; \
+	CUDA_VISIBLE_DEVICES=0,1 OMP_NUM_THREADS=1 mpirun -np 16 ./$(EXE) ; date 
+
+
+
+.PHONY: d32
+d32:
+	cd $(EXEDIR); date; \
+	ulimit -u 32768;\
+	CUDA_VISIBLE_DEVICES=0,1 OMP_NUM_THREADS=4 mpirun -np 32 ./$(EXE) ; date 
+##	mpirun -np 64 ./$(EXE)  
+##	mpirun -np 8 ./$(EXE) ../demo/lcdm1.run
+
+.PHONY: clean
+clean:
+	rm -f $(OBJDIR)/*.o $(LIBDIR)/*.so ./data_prec.mod $(EXEDIR)/$(EXE)
+

@@ -1,0 +1,15 @@
+JOB_PARTITION=normal
+NPROCS=36
+TASKS_PER_NODE=9(x4)
+JOB_CPUS_PER_NODE=30(x4)
+JOB_ID=14124927
+ 9 2 2 6 6
+ PROC_SIZE = 36 generating rankfile...
+36
+[1742802009.297451] [g02r2n10:22801:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO
+[1742802009.334699] [g02r2n10:22804:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO
+[1742802009.336279] [g02r2n10:22814:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO
+[1742802009.337873] [g02r2n10:22811:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO
+[1742802009.358290] [g02r2n10:22815:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO
+[1742802009.358772] [g02r2n10:22803:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO
+[1742802009.421499] [g02r2n10:22809:0]        mm_iface.c:758  UCX  ERROR mm_iface failed to allocate receive FIFO

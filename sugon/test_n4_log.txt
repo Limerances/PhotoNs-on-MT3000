@@ -1,0 +1,507 @@
+JOB_PARTITION=normal
+NPROCS=36
+TASKS_PER_NODE=9(x4)
+JOB_CPUS_PER_NODE=30(x4)
+JOB_ID=14124090
+ 9 2 2 6 6
+ PROC_SIZE = 36 generating rankfile...
+36
+
+
+
+
+   / PHOTONS-3 / 
+
+
+   OPTIONS
+    + MTHKTree
+    + GPUP2P
+    + FIXEDSTEP
+    + SPI
+    + GPUCUTOFF
+    + POW_SPEC
+    + INTXYZ
+
+   BIT = 1073741824
+ PathSnapshot = ../data/
+ read power spectrum from '../demo/planck_2018_linear_powspec_z_127.txt'
+found 1101 pairs of values in input spectrum table
+
+
+ Initial Condition generating...
+ vel_prefac = 7.139370, hubble_a = 80.772804, F_Omega = 0.999999
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   9.37500000E-02
+ merge time:   1.56250000E-02
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:  0.109375000    
+ merge time:   1.56250000E-02
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   9.37500000E-02
+ merge time:   1.56250000E-02
+ [0] ic generation complete in 15.607036 SEC !
+ [1] ic generation complete in 15.742103 SEC !
+ 
+
+ MASSPART = 3.216026e+08  [Msun/h]
+ BOX SIZE = 125558.039062 [kpc/h]
+ OMEGA_M = 0.311100
+ OMEGA_X = 0.688900
+ HUBBLE0 = 0.676600
+ Rsoften = 3.100199 [kpc/h]
+ NPART TOTAL = 531441000 
+
+ NDOM_COM=32
+ NSIDEMESH = 810
+ Rcutoff = 871.930847
+ N Proc = 36 (6 x 6)
+ red-shift = 127.000000
+ ai = 0.007812
+ af = 0.010000
+ domain_decomp 
+ boundary 
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   1.56250000E-02
+ merge time:   0.00000000    
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   7.81250000E-02
+ merge time:   0.00000000    
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   1.56250000E-02
+ merge time:   1.56250000E-02
+[0] Convolution time 1.165355.
+ 
+ partmesh complete !
+   Finest level 0 : 531440980
+     0 GRAV dt : dom 0.399127, bnd 1.450399, pm 15.338178
+
+ Reference Time of single step = 20.730850
+
+     1 GRAV dt : dom 0.706264, bnd 1.391887, gr 18.939834 (pm 6.698175, prep 1.518906 m2l 0.000000 task 12.563249)
+     7 GRAV dt : dom 0.706314, bnd 1.424660, gr 18.907071 (pm 6.389417, prep 1.650289 m2l 0.000000 task 12.846782)
+     8 GRAV dt : dom 0.706265, bnd 1.444345, gr 18.887386 (pm 6.463838, prep 1.665092 m2l 0.000000 task 12.666874)
+     6 GRAV dt : dom 0.706280, bnd 1.404140, gr 18.927594 (pm 6.551170, prep 1.536528 m2l 0.000000 task 12.753431)
+    14 GRAV dt : dom 0.706498, bnd 1.459708, gr 18.872029 (pm 9.136947, prep 1.530106 m2l 0.000001 task 7.525506)
+    13 GRAV dt : dom 0.706298, bnd 1.456201, gr 18.875532 (pm 6.322102, prep 1.551664 m2l 0.000001 task 13.107684)
+    12 GRAV dt : dom 0.706474, bnd 1.455488, gr 18.876250 (pm 6.350812, prep 1.569212 m2l 0.000000 task 13.001401)
+     2 GRAV dt : dom 0.706337, bnd 1.404167, gr 18.927564 (pm 6.612471, prep 1.536383 m2l 0.000000 task 12.641990)
+    15 GRAV dt : dom 0.706265, bnd 1.443169, gr 18.888561 (pm 6.621582, prep 1.567960 m2l 0.000000 task 12.544972)
+
+
+LOOP         a=( 0.007812 to 0.0084825561 )            0
+
+ dk = 5725.061035 dd =16.352407 
+ zz = 116.889000
+
+     5 GRAV dt : dom 0.706256, bnd 1.400981, gr 18.930744 (pm 6.388552, prep 1.558656 m2l 0.000000 task 13.031095)
+    30 GRAV dt : dom 0.706507, bnd 1.507686, gr 18.824117 (pm 6.251733, prep 1.579136 m2l 0.000000 task 13.009005)
+    29 GRAV dt : dom 0.706332, bnd 1.551579, gr 18.778883 (pm 6.446660, prep 1.580148 m2l 0.000000 task 12.751213)
+    17 GRAV dt : dom 0.706478, bnd 1.452784, gr 18.878940 (pm 6.654496, prep 1.513358 m2l 0.000000 task 12.557905)
+    20 GRAV dt : dom 0.706290, bnd 1.491527, gr 18.840271 (pm 9.023084, prep 1.537670 m2l 0.000000 task 7.630799)
+    22 GRAV dt : dom 0.706507, bnd 1.529687, gr 18.800777 (pm 6.202510, prep 1.591234 m2l 0.000001 task 13.228018)
+     3 GRAV dt : dom 0.706254, bnd 1.442455, pm 15.438537
+    31 GRAV dt : dom 0.706274, bnd 1.509747, gr 18.822053 (pm 6.210205, prep 1.673697 m2l 0.000000 task 12.901672)
+    27 GRAV dt : dom 0.706317, bnd 1.540817, gr 18.789643 (pm 6.395897, prep 1.555488 m2l 0.000000 task 12.810840)
+ step = (0 / 1) level = (0/0) 
+    10 GRAV dt : dom 0.706312, bnd 1.421559, gr 18.910174 (pm 6.438817, prep 1.638481 m2l 0.000001 task 12.784869)
+    24 GRAV dt : dom 0.706261, bnd 1.496942, gr 18.834854 (pm 6.432736, prep 1.525416 m2l 0.000000 task 12.746328)
+    33 GRAV dt : dom 0.706255, bnd 1.555167, gr 18.775278 (pm 6.218889, prep 1.591368 m2l 0.000000 task 13.008727)
+     4 GRAV dt : dom 0.706392, bnd 1.395859, gr 18.935869 (pm 6.415731, prep 1.564483 m2l 0.000000 task 12.962505)
+    26 GRAV dt : dom 0.706327, bnd 1.503864, gr 18.827939 (pm 6.385749, prep 1.563910 m2l 0.000001 task 12.900082)
+    23 GRAV dt : dom 0.706260, bnd 1.532191, gr 18.798270 (pm 6.437126, prep 1.520454 m2l 0.000000 task 12.849974)
+    16 GRAV dt : dom 0.706504, bnd 1.450476, gr 18.881252 (pm 6.434772, prep 1.541287 m2l 0.000000 task 12.825451)
+    19 GRAV dt : dom 0.706490, bnd 1.488550, gr 18.843244 (pm 9.176955, prep 1.536393 m2l 0.000000 task 7.475291)
+    34 GRAV dt : dom 0.706256, bnd 1.558052, gr 18.772404 (pm 6.168698, prep 1.591599 m2l 0.000000 task 13.142861)
+     9 GRAV dt : dom 0.706301, bnd 1.413894, gr 18.917830 (pm 9.204745, prep 1.517786 m2l 0.000000 task 7.494933)
+    25 GRAV dt : dom 0.706306, bnd 1.499247, gr 18.832547 (pm 8.867068, prep 1.585017 m2l 0.000000 task 8.046309)
+    21 GRAV dt : dom 0.706301, bnd 1.609537, pm 15.374958
+    11 GRAV dt : dom 0.706283, bnd 1.432717, gr 18.899009 (pm 6.645468, prep 1.559262 m2l 0.000001 task 12.562296)
+    18 GRAV dt : dom 0.706313, bnd 1.543186, pm 15.368395
+    35 GRAV dt : dom 0.706302, bnd 1.559622, gr 18.770827 (pm 8.933859, prep 1.533358 m2l 0.000000 task 7.699168)
+    32 GRAV dt : dom 0.706264, bnd 1.513335, gr 18.818447 (pm 6.137440, prep 1.596856 m2l 0.000000 task 13.126136)
+    28 GRAV dt : dom 0.706271, bnd 1.547704, gr 18.782763 (pm 6.166637, prep 1.667035 m2l 0.000000 task 13.003579)
+ [1] NPART = 16745608 (r=0.784045), NPART_BND = 2930643 (r=0.333652)
+ [4] NPART = 16726850 (r=0.780606), NPART_BND = 2863103 (r=0.325962)
+ [2] NPART = 16593541 (r=0.779330), NPART_BND = 2964386 (r=0.337493)
+ [5] NPART = 16537766 (r=0.773724), NPART_BND = 2879475 (r=0.327826)
+ [9] NPART = 16567378 (r=0.782582), NPART_BND = 2879617 (r=0.331088)
+ [6] NPART = 16558480 (r=0.781364), NPART_BND = 2858256 (r=0.328632)
+ [10] NPART = 16492367 (r=0.776802), NPART_BND = 2810989 (r=0.323198)
+ [7] NPART = 16486669 (r=0.778046), NPART_BND = 2847605 (r=0.327408)
+ [11] NPART = 16664104 (r=0.785777), NPART_BND = 2862280 (r=0.329095)
+ [8] NPART = 16632704 (r=0.787486), NPART_BND = 2936156 (r=0.337589)
+ [15] NPART = 16455516 (r=0.779179), NPART_BND = 2906911 (r=0.334227)
+ [12] NPART = 16607365 (r=0.786407), NPART_BND = 2934679 (r=0.337419)
+ [16] NPART = 16559128 (r=0.782548), NPART_BND = 2887021 (r=0.331940)
+ [13] NPART = 16523628 (r=0.780803), NPART_BND = 2879152 (r=0.331035)
+ [17] NPART = 16710242 (r=0.789531), NPART_BND = 2909439 (r=0.334517)
+ [14] NPART = 16724207 (r=0.787384), NPART_BND = 2842125 (r=0.326778)
+ [19] NPART = 16685882 (r=0.781737), NPART_BND = 2932449 (r=0.333857)
+ [20] NPART = 16550437 (r=0.774580), NPART_BND = 2888296 (r=0.328831)
+ [24] NPART = 16711699 (r=0.790664), NPART_BND = 2936126 (r=0.337586)
+ [25] NPART = 16583895 (r=0.784073), NPART_BND = 2900140 (r=0.333448)
+ [22] NPART = 16727929 (r=0.784494), NPART_BND = 2959583 (r=0.336947)
+ [26] NPART = 16455893 (r=0.780044), NPART_BND = 2928042 (r=0.336656)
+ [23] NPART = 16546508 (r=0.771787), NPART_BND = 2822115 (r=0.321296)
+ [27] NPART = 16543133 (r=0.783391), NPART_BND = 2923973 (r=0.336188)
+ [28] NPART = 16618963 (r=0.783542), NPART_BND = 2851898 (r=0.327901)
+ [30] NPART = 16744984 (r=0.793494), NPART_BND = 2973165 (r=0.341844)
+ [31] NPART = 16465582 (r=0.778697), NPART_BND = 2884874 (r=0.331693)
+ [32] NPART = 16743848 (r=0.791424), NPART_BND = 2922867 (r=0.336061)
+ [29] NPART = 16631164 (r=0.786234), NPART_BND = 2906595 (r=0.334190)
+ [33] NPART = 16572855 (r=0.784418), NPART_BND = 2919758 (r=0.335704)
+ [34] NPART = 16531966 (r=0.781211), NPART_BND = 2880973 (r=0.331244)
+ [35] NPART = 16740670 (r=0.791344), NPART_BND = 2924069 (r=0.336199)
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   4.68750000E-02
+ merge time:   0.00000000    
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   6.25000000E-02
+ merge time:   1.56250000E-02
+[0] Convolution time 1.147859.
+
+ partmesh complete !
+   Finest level 0 : 531440961
+     0 head_r     0 dt : dom 0.983419, bnd 1.568103, pm 15.184445
+     7 head_r     0 dt : dom 0.681177, bnd 1.438926, adptv 19.313183, gr 16.408278 (pm 6.741670, prep 1.367861 m2l 0.000001 adptv_task 0.000000 task 25.225517)
+     2 head_r     0 dt : dom 0.666646, bnd 1.402339, adptv 19.347749, gr 16.445316 (pm 6.659119, prep 1.428537 m2l 0.000000 adptv_task 0.000000 task 25.153933)
+    12 head_r     0 dt : dom 0.671103, bnd 1.458389, adptv 19.291535, gr 16.389712 (pm 6.420146, prep 1.480221 m2l 0.000000 adptv_task 0.000000 task 25.760838)
+    14 head_r     0 dt : dom 0.676159, bnd 1.476752, adptv 19.282763, gr 16.370850 (pm 6.507942, prep 1.465191 m2l 0.000000 adptv_task 0.000000 task 20.106705)
+     8 head_r     0 dt : dom 0.676501, bnd 1.452198, adptv 19.298684, gr 16.394498 (pm 6.506340, prep 1.382306 m2l 0.000000 adptv_task 0.000000 task 25.493646)
+     6 head_r     0 dt : dom 0.671931, bnd 1.419910, adptv 19.339140, gr 16.431108 (pm 6.727418, prep 1.338540 m2l 0.000000 adptv_task 0.000000 task 25.332216)
+    13 head_r     0 dt : dom 0.681648, bnd 1.466815, adptv 19.279929, gr 16.381634 (pm 6.484419, prep 1.394780 m2l 0.000000 adptv_task 0.000000 task 25.919789)
+     1 head_r     0 dt : dom 0.668277, bnd 1.391726, adptv 19.359995, gr 16.454321 (pm 6.751426, prep 1.383026 m2l 0.000000 adptv_task 0.000000 task 25.021026)
+ [0] LOOP TIME = 18.934519 ( 37.342854 ) SEC  
+ STEP 1   
+
+     3 head_r     3 dt : dom 0.988646, bnd 1.554351, pm 15.192948
+
+
+LOOP         a=( 0.008483 to 0.0092100768 )            1
+
+ dk = 5965.486328 dd =15.693175 
+ zz = 107.576721
+
+    10 head_r     3 dt : dom 0.682676, bnd 1.436019, adptv 19.315312, gr 16.410652 (pm 6.535827, prep 1.475419 m2l 0.000001 adptv_task 0.000000 task 25.355098)
+    18 head_r    18 dt : dom 1.007120, bnd 1.666123, pm 15.062722
+    21 head_r    21 dt : dom 0.983399, bnd 1.757597, pm 14.995002
+     5 head_r     3 dt : dom 0.663413, bnd 1.405749, adptv 19.358317, gr 16.437751 (pm 9.170260, prep 1.516127 m2l 0.000001 adptv_task 0.000000 task 20.357344)
+    20 head_r    18 dt : dom 0.647014, bnd 1.486459, adptv 19.296724, gr 16.344621 (pm 6.537867, prep 1.448279 m2l 0.000000 adptv_task 0.000000 task 20.149742)
+    35 head_r    21 dt : dom 0.630309, bnd 1.554234, adptv 19.227862, gr 16.293014 (pm 6.232049, prep 1.465851 m2l 0.000000 adptv_task 0.000000 task 20.655344)
+    15 head_r     3 dt : dom 0.669628, bnd 1.450182, adptv 19.310639, gr 16.392599 (pm 6.414017, prep 1.530637 m2l 0.000000 adptv_task 0.000000 task 25.247607)
+    30 head_r    18 dt : dom 0.664758, bnd 1.515721, adptv 19.270165, gr 16.308023 (pm 6.295799, prep 1.481576 m2l 0.000000 adptv_task 0.000000 task 25.846344)
+    27 head_r    21 dt : dom 0.632767, bnd 1.528349, adptv 19.246180, gr 16.316942 (pm 6.409595, prep 1.485091 m2l 0.000000 adptv_task 0.000000 task 25.449156)
+ step = (0 / 1) level = (0/0) 
+     4 head_r     3 dt : dom 0.672922, bnd 1.399237, adptv 19.350648, gr 16.447548 (pm 9.425153, prep 1.296674 m2l 0.000000 adptv_task 0.000000 task 20.286247)
+    32 head_r    18 dt : dom 0.656720, bnd 1.513008, adptv 19.278438, gr 16.304827 (pm 6.153144, prep 1.521567 m2l 0.000000 adptv_task 0.000000 task 26.125434)
+    34 head_r    21 dt : dom 0.636818, bnd 1.548937, adptv 19.225290, gr 16.295948 (pm 6.179300, prep 1.475542 m2l 0.000000 adptv_task 0.000000 task 26.206733)
+    16 head_r     3 dt : dom 0.680484, bnd 1.458198, adptv 19.290771, gr 16.386285 (pm 6.546853, prep 1.365123 m2l 0.000000 adptv_task 0.000000 task 25.556917)
+    26 head_r    18 dt : dom 0.689512, bnd 1.506671, adptv 19.243642, gr 16.322663 (pm 6.691018, prep 1.350924 m2l 0.000000 adptv_task 0.000000 task 25.297925)
+    29 head_r    21 dt : dom 0.638246, bnd 1.546354, adptv 19.226239, gr 16.302638 (pm 6.353626, prep 1.368564 m2l 0.000000 adptv_task 0.000000 task 25.718271)
+    17 head_r     3 dt : dom 0.678785, bnd 1.465006, adptv 19.290551, gr 16.379088 (pm 6.773995, prep 1.334716 m2l 0.000000 adptv_task 0.000000 task 24.931806)
+    19 head_r    18 dt : dom 0.679782, bnd 1.479292, adptv 19.267774, gr 16.350948 (pm 6.459286, prep 1.495391 m2l 0.000000 adptv_task 0.000000 task 20.087360)
+    22 head_r    21 dt : dom 0.632441, bnd 1.522767, adptv 19.253501, gr 16.326661 (pm 9.135211, prep 1.360807 m2l 0.000000 adptv_task 0.000000 task 20.731488)
+     9 head_r     3 dt : dom 0.677624, bnd 1.411925, adptv 19.329200, gr 16.433570 (pm 6.774983, prep 1.353467 m2l 0.000000 adptv_task 0.000000 task 19.914403)
+    31 head_r    18 dt : dom 0.643903, bnd 1.514690, adptv 19.290987, gr 16.307023 (pm 6.458367, prep 1.447646 m2l 0.000000 adptv_task 0.000000 task 25.462978)
+    23 head_r    21 dt : dom 0.621251, bnd 1.529863, adptv 19.261870, gr 16.319878 (pm 6.253769, prep 1.513010 m2l 0.000000 adptv_task 0.000000 task 25.735060)
+    11 head_r     3 dt : dom 0.688481, bnd 1.447095, adptv 19.301314, gr 16.396609 (pm 6.648150, prep 1.491365 m2l 0.000000 adptv_task 0.000000 task 24.921924)
+    24 head_r    18 dt : dom 0.636699, bnd 1.479685, adptv 19.312545, gr 16.340476 (pm 6.229869, prep 1.622431 m2l 0.000000 adptv_task 0.000000 task 25.500417)
+    33 head_r    21 dt : dom 0.633553, bnd 1.548516, adptv 19.230349, gr 16.297452 (pm 6.480924, prep 1.358977 m2l 0.000000 adptv_task 0.000000 task 25.732876)
+    25 head_r    18 dt : dom 0.651490, bnd 1.489164, adptv 19.293249, gr 16.333196 (pm 6.384329, prep 1.513736 m2l 0.000000 adptv_task 0.000000 task 20.660591)
+    28 head_r    21 dt : dom 0.629192, bnd 1.535534, adptv 19.240539, gr 16.312087 (pm 6.481756, prep 1.444855 m2l 0.000000 adptv_task 0.000000 task 25.578524)
+ [1] NPART = 16750563 (r=0.783825), NPART_BND = 2920182 (r=0.332461)
+ [2] NPART = 16440315 (r=0.772274), NPART_BND = 2940529 (r=0.334777)
+ [4] NPART = 16723963 (r=0.780231), NPART_BND = 2856584 (r=0.325220)
+ [5] NPART = 16529479 (r=0.773413), NPART_BND = 2879952 (r=0.327881)
+ [6] NPART = 16718765 (r=0.788109), NPART_BND = 2865584 (r=0.329475)
+ [9] NPART = 16566342 (r=0.782337), NPART_BND = 2874560 (r=0.330507)
+ [7] NPART = 16475295 (r=0.777685), NPART_BND = 2850008 (r=0.327684)
+ [10] NPART = 16473312 (r=0.776544), NPART_BND = 2823636 (r=0.324652)
+ [8] NPART = 16647011 (r=0.787637), NPART_BND = 2925608 (r=0.336376)
+ [11] NPART = 16654214 (r=0.785497), NPART_BND = 2865226 (r=0.329434)
+ [12] NPART = 16616461 (r=0.786431), NPART_BND = 2926191 (r=0.336443)
+ [13] NPART = 16514723 (r=0.780582), NPART_BND = 2882568 (r=0.331428)
+ [15] NPART = 16465705 (r=0.779244), NPART_BND = 2898334 (r=0.333240)
+ [16] NPART = 16557819 (r=0.782261), NPART_BND = 2881213 (r=0.331272)
+ [14] NPART = 16717640 (r=0.787108), NPART_BND = 2841817 (r=0.326742)
+ [17] NPART = 16702090 (r=0.789293), NPART_BND = 2911663 (r=0.334773)
+ [19] NPART = 16683365 (r=0.781479), NPART_BND = 2928493 (r=0.333407)
+ [25] NPART = 16586584 (r=0.784009), NPART_BND = 2895882 (r=0.332959)
+ [20] NPART = 16547361 (r=0.774327), NPART_BND = 2885009 (r=0.328456)
+ [26] NPART = 16631606 (r=0.786979), NPART_BND = 2924661 (r=0.336267)
+ [24] NPART = 16711248 (r=0.790465), NPART_BND = 2931652 (r=0.337071)
+ [32] NPART = 16744233 (r=0.791490), NPART_BND = 2924121 (r=0.336205)
+ [30] NPART = 16587396 (r=0.786367), NPART_BND = 2953659 (r=0.339602)
+ [31] NPART = 16478802 (r=0.778568), NPART_BND = 2868439 (r=0.329803)
+ [22] NPART = 16730014 (r=0.784273), NPART_BND = 2951964 (r=0.336079)
+ [23] NPART = 16537512 (r=0.771508), NPART_BND = 2824110 (r=0.321523)
+ [27] NPART = 16541963 (r=0.783138), NPART_BND = 2918860 (r=0.335600)
+ [28] NPART = 16621714 (r=0.783607), NPART_BND = 2850767 (r=0.327771)
+ [29] NPART = 16642816 (r=0.786149), NPART_BND = 2892825 (r=0.332607)
+ [33] NPART = 16576746 (r=0.784228), NPART_BND = 2911151 (r=0.334714)
+ [35] NPART = 16742099 (r=0.791132), NPART_BND = 2917357 (r=0.335428)
+ [34] NPART = 16523785 (r=0.780906), NPART_BND = 2881555 (r=0.331311)
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   4.68750000E-02
+ merge time:   0.00000000    
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   3.12500000E-02
+ merge time:   1.56250000E-02
+[0] Convolution time 1.121901.
+
+ partmesh complete !
+   Finest level 0 : 531440941
+     0 head_r     0 dt : dom 0.975529, bnd 1.550852, pm 15.161370
+    12 head_r     0 dt : dom 0.664895, bnd 1.451760, adptv 38.226373, gr 16.360752 (pm 6.234204, prep 1.534336 m2l 0.000000 adptv_task 0.000000 task 38.690964)
+     2 head_r     0 dt : dom 0.656706, bnd 1.398235, adptv 38.282297, gr 16.417853 (pm 6.485881, prep 1.578139 m2l 0.000001 adptv_task 0.000000 task 37.645605)
+     7 head_r     0 dt : dom 0.670690, bnd 1.423814, adptv 38.247435, gr 16.392665 (pm 6.498911, prep 1.435059 m2l 0.000001 adptv_task 0.000000 task 37.908024)
+    14 head_r     0 dt : dom 0.668176, bnd 1.458856, adptv 38.217601, gr 16.354930 (pm 6.731864, prep 1.323713 m2l 0.000000 adptv_task 0.000000 task 32.491738)
+     6 head_r     0 dt : dom 0.664356, bnd 1.398251, adptv 38.281595, gr 16.410926 (pm 6.584899, prep 1.423481 m2l 0.000000 adptv_task 0.000000 task 37.939608)
+     8 head_r     0 dt : dom 0.675922, bnd 1.441977, adptv 38.223781, gr 16.373240 (pm 6.716611, prep 1.352949 m2l 0.000000 adptv_task 0.000000 task 37.924001)
+     1 head_r     0 dt : dom 0.662929, bnd 1.395343, adptv 38.285407, gr 16.423681 (pm 6.466717, prep 1.451604 m2l 0.000000 adptv_task 0.000000 task 37.848573)
+    13 head_r     0 dt : dom 0.665939, bnd 1.456250, adptv 38.221383, gr 16.359494 (pm 6.362931, prep 1.498594 m2l 0.000000 adptv_task 0.000000 task 38.729869)
+    10 head_r     3 dt : dom 0.664598, bnd 1.445784, adptv 38.249089, gr 16.378222 (pm 6.455476, prep 1.481333 m2l 0.000000 adptv_task 0.000000 task 38.006153)
+     3 head_r     3 dt : dom 0.969312, bnd 1.569204, pm 15.149233
+    21 head_r    21 dt : dom 0.969355, bnd 1.751913, pm 14.966571
+    18 head_r    18 dt : dom 0.981176, bnd 1.641628, pm 15.064993
+     4 head_r     3 dt : dom 0.655157, bnd 1.409184, adptv 38.284817, gr 16.414230 (pm 9.285646, prep 1.368471 m2l 0.000000 adptv_task 0.000000 task 27.645265)
+    34 head_r    21 dt : dom 0.627192, bnd 1.554687, adptv 38.157668, gr 16.260585 (pm 9.049833, prep 1.338012 m2l 0.000000 adptv_task 0.000000 task 33.734350)
+    25 head_r    18 dt : dom 0.629341, bnd 1.481308, adptv 38.222770, gr 16.326776 (pm 6.394195, prep 1.491754 m2l 0.000000 adptv_task 0.000000 task 33.277621)
+     5 head_r     3 dt : dom 0.647414, bnd 1.408981, adptv 38.290764, gr 16.411105 (pm 9.280126, prep 1.387921 m2l 0.000000 adptv_task 0.000000 task 27.665544)
+    27 head_r    21 dt : dom 0.615550, bnd 1.540237, adptv 38.185683, gr 16.275907 (pm 6.271810, prep 1.516972 m2l 0.000000 adptv_task 0.000000 task 38.209779)
+    26 head_r    18 dt : dom 0.667782, bnd 1.487529, adptv 38.178487, gr 16.321786 (pm 6.612629, prep 1.397079 m2l 0.000000 adptv_task 0.000000 task 37.740245)
+    16 head_r     3 dt : dom 0.663739, bnd 1.466126, adptv 38.223799, gr 16.355107 (pm 6.500387, prep 1.418426 m2l 0.000000 adptv_task 0.000000 task 38.231688)
+    23 head_r    21 dt : dom 0.624954, bnd 1.537893, adptv 38.181730, gr 16.281424 (pm 6.527280, prep 1.327534 m2l 0.000000 adptv_task 0.000000 task 38.400100)
+    19 head_r    18 dt : dom 0.659447, bnd 1.476607, adptv 38.198806, gr 16.336032 (pm 6.350244, prep 1.483281 m2l 0.000000 adptv_task 0.000000 task 32.865005)
+    15 head_r     3 dt : dom 0.655288, bnd 1.461395, adptv 38.240824, gr 16.358575 (pm 6.518125, prep 1.458172 m2l 0.000000 adptv_task 0.000000 task 37.830708)
+    29 head_r    21 dt : dom 0.623651, bnd 1.553482, adptv 38.163461, gr 16.266023 (pm 6.315893, prep 1.477659 m2l 0.000000 adptv_task 0.000000 task 38.471129)
+    20 head_r    18 dt : dom 0.617062, bnd 1.488129, adptv 38.237902, gr 16.324823 (pm 6.460978, prep 1.495231 m2l 0.000000 adptv_task 0.000000 task 32.670824)
+    11 head_r     3 dt : dom 0.663237, bnd 1.462265, adptv 38.239386, gr 16.361644 (pm 6.516855, prep 1.428861 m2l 0.000000 adptv_task 0.000000 task 37.585571)
+    22 head_r    21 dt : dom 0.619391, bnd 1.533154, adptv 38.190248, gr 16.285716 (pm 9.094753, prep 1.361400 m2l 0.000000 adptv_task 0.000000 task 28.223531)
+    30 head_r    18 dt : dom 0.627908, bnd 1.493794, adptv 38.214533, gr 16.315528 (pm 6.213088, prep 1.601084 m2l 0.000000 adptv_task 0.000000 task 38.601060)
+     9 head_r     3 dt : dom 0.661394, bnd 1.416399, adptv 38.261545, gr 16.406015 (pm 6.737134, prep 1.410586 m2l 0.000000 adptv_task 0.000000 task 32.286612)
+    28 head_r    21 dt : dom 0.621337, bnd 1.544972, adptv 38.168663, gr 16.275520 (pm 6.432397, prep 1.447729 m2l 0.000000 adptv_task 0.000000 task 38.166697)
+    24 head_r    18 dt : dom 0.606412, bnd 1.484944, adptv 38.249651, gr 16.321494 (pm 6.300924, prep 1.530334 m2l 0.000000 adptv_task 0.000000 task 38.237545)
+    17 head_r     3 dt : dom 0.661740, bnd 1.479212, adptv 38.222755, gr 16.342757 (pm 6.689117, prep 1.358766 m2l 0.000000 adptv_task 0.000000 task 37.326991)
+    35 head_r    21 dt : dom 0.622276, bnd 1.556342, adptv 38.157548, gr 16.262393 (pm 6.190137, prep 1.490753 m2l 0.000000 adptv_task 0.000000 task 33.586642)
+    31 head_r    18 dt : dom 0.628333, bnd 1.490370, adptv 38.216349, gr 16.314646 (pm 6.541058, prep 1.381127 m2l 0.000000 adptv_task 0.000000 task 38.019686)
+    33 head_r    21 dt : dom 0.633981, bnd 1.556770, adptv 38.149155, gr 16.263104 (pm 6.286461, prep 1.472683 m2l 0.000001 adptv_task 0.000000 task 38.513739)
+    32 head_r    18 dt : dom 0.633150, bnd 1.487216, adptv 38.208406, gr 16.317318 (pm 6.158868, prep 1.496431 m2l 0.000000 adptv_task 0.000000 task 39.192489)
+ [0] LOOP TIME = 18.893928 ( 56.236795 ) SEC  
+ STEP 2   
+
+
+
+LOOP         a=( 0.009210 to 0.0099999994 )            2
+
+ dk = 6216.081543 dd =15.060687 
+ zz = 99.000000
+
+ step = (0 / 1) level = (0/0) 
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   3.12500000E-02
+ merge time:   0.00000000    
+ [13] NPART = 16507418 (r=0.780376), NPART_BND = 2884762 (r=0.331680)
+ [5] NPART = 16521083 (r=0.773123), NPART_BND = 2881076 (r=0.328009)
+ [17] NPART = 16693968 (r=0.789081), NPART_BND = 2914523 (r=0.335102)
+ [1] NPART = 16591465 (r=0.776694), NPART_BND = 2900323 (r=0.330200)
+ [11] NPART = 16643864 (r=0.785278), NPART_BND = 2870139 (r=0.329999)
+ [15] NPART = 16475203 (r=0.779423), NPART_BND = 2893282 (r=0.332660)
+ [10] NPART = 16454099 (r=0.776299), NPART_BND = 2836771 (r=0.326162)
+ [9] NPART = 16563635 (r=0.782130), NPART_BND = 2872121 (r=0.330227)
+ [7] NPART = 16464716 (r=0.777311), NPART_BND = 2851298 (r=0.327832)
+ [4] NPART = 16719189 (r=0.779886), NPART_BND = 2852683 (r=0.324776)
+ [6] NPART = 16715485 (r=0.787904), NPART_BND = 2863764 (r=0.329266)
+ [2] NPART = 16616039 (r=0.779097), NPART_BND = 2936049 (r=0.334267)
+ [12] NPART = 16626589 (r=0.786535), NPART_BND = 2918642 (r=0.335575)
+ [14] NPART = 16709882 (r=0.786871), NPART_BND = 2843701 (r=0.326959)
+ [8] NPART = 16662373 (r=0.787864), NPART_BND = 2915869 (r=0.335257)
+ [31] NPART = 16488834 (r=0.778540), NPART_BND = 2857729 (r=0.328572)
+ [33] NPART = 16580455 (r=0.784076), NPART_BND = 2903678 (r=0.333855)
+ [30] NPART = 16595550 (r=0.786233), NPART_BND = 2942174 (r=0.338281)
+ [19] NPART = 16682478 (r=0.781208), NPART_BND = 2922583 (r=0.332734)
+ [35] NPART = 16743292 (r=0.790966), NPART_BND = 2912044 (r=0.334817)
+ [32] NPART = 16744602 (r=0.791570), NPART_BND = 2925746 (r=0.336392)
+ [34] NPART = 16516502 (r=0.780598), NPART_BND = 2881187 (r=0.331269)
+ [25] NPART = 16589569 (r=0.784006), NPART_BND = 2892811 (r=0.332605)
+ [29] NPART = 16653645 (r=0.786179), NPART_BND = 2882732 (r=0.331447)
+ [23] NPART = 16526502 (r=0.771261), NPART_BND = 2828918 (r=0.322070)
+ [28] NPART = 16623207 (r=0.783751), NPART_BND = 2852828 (r=0.328008)
+ [26] NPART = 16643670 (r=0.787005), NPART_BND = 2913244 (r=0.334955)
+ [27] NPART = 16542084 (r=0.782918), NPART_BND = 2913260 (r=0.334957)
+ [24] NPART = 16711237 (r=0.790266), NPART_BND = 2926717 (r=0.336504)
+ [20] NPART = 16544102 (r=0.774083), NPART_BND = 2882144 (r=0.328130)
+ [22] NPART = 16734383 (r=0.784063), NPART_BND = 2942334 (r=0.334983)
+ [16] NPART = 16555784 (r=0.781997), NPART_BND = 2876674 (r=0.330750)
+output powspec_3 zz = 99.000000
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   3.12500000E-02
+ merge time:   0.00000000    
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   1.56250000E-02
+ merge time:   1.56250000E-02
+[0] Convolution time 1.122935.
+
+ partmesh complete !
+   Finest level 0 : 531440904
+
+     Snapshot <<< ../data//snapshot_3/cfg+dat_3 (z=99.000)
+
+[0] Disk IO write 3 time: 0.004154 [SEC]
+[18] Disk IO write 3 time: 0.005689 [SEC]
+[21] Disk IO write 3 time: 0.005879 [SEC]
+[3] Disk IO write 3 time: 0.005995 [SEC]
+[31] Disk IO write 3 time: 2.355857 [SEC]
+[27] Disk IO write 3 time: 2.363945 [SEC]
+[19] Disk IO write 3 time: 2.388523 [SEC]
+[30] Disk IO write 3 time: 2.397696 [SEC]
+[34] Disk IO write 3 time: 2.393491 [SEC]
+[23] Disk IO write 3 time: 2.393775 [SEC]
+[29] Disk IO write 3 time: 2.396604 [SEC]
+[33] Disk IO write 3 time: 2.402781 [SEC]
+[24] Disk IO write 3 time: 2.432413 [SEC]
+[22] Disk IO write 3 time: 2.434165 [SEC]
+[35] Disk IO write 3 time: 2.479403 [SEC]
+[25] Disk IO write 3 time: 2.544260 [SEC]
+[28] Disk IO write 3 time: 2.564985 [SEC]
+[32] Disk IO write 3 time: 2.580178 [SEC]
+[26] Disk IO write 3 time: 2.627213 [SEC]
+[17] Disk IO write 3 time: 2.750080 [SEC]
+[11] Disk IO write 3 time: 2.765951 [SEC]
+[20] Disk IO write 3 time: 2.748792 [SEC]
+[10] Disk IO write 3 time: 2.770656 [SEC]
+[8] Disk IO write 3 time: 2.774779 [SEC]
+[9] Disk IO write 3 time: 2.787587 [SEC]
+[1] Disk IO write 3 time: 2.806089 [SEC]
+[2] Disk IO write 3 time: 2.867775 [SEC]
+[12] Disk IO write 3 time: 2.872518 [SEC]
+[7] Disk IO write 3 time: 2.904456 [SEC]
+[16] Disk IO write 3 time: 2.905858 [SEC]
+[13] Disk IO write 3 time: 2.915748 [SEC]
+[6] Disk IO write 3 time: 2.932172 [SEC]
+[15] Disk IO write 3 time: 2.972351 [SEC]
+[4] Disk IO write 3 time: 2.989949 [SEC]
+[14] Disk IO write 3 time: 2.990187 [SEC]
+[5] Disk IO write 3 time: 2.994906 [SEC]
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   4.68750000E-02
+ merge time:   0.00000000    
+  
+ ***** Using the FFTW (F2003 interface) engine *****
+  
+ initializing FFTW with            8  threads
+ init time:   0.00000000    
+ mem split time:   1.56250000E-02
+ mpi alltoallv time:   3.12500000E-02
+ merge time:   0.00000000    
+ init time:   0.00000000    
+ mem split time:   0.00000000    
+ mpi alltoallv time:   3.12500000E-02
+ merge time:   1.56250000E-02
+[0] Convolution time 1.155006.
+
+ partmesh complete !
+     0 head_r     0 dt : dom 0.972281, bnd 4.386510, pm 15.226043
+     3 head_r     3 dt : dom 0.965252, bnd 4.283429, pm 15.221852
+    21 head_r    21 dt : dom 0.965278, bnd 4.392623, pm 15.226092
+    18 head_r    18 dt : dom 0.966570, bnd 4.351594, pm 15.226061
+    10 head_r     3 dt : dom 0.662068, bnd 4.184665, adptv 57.141792, gr 39.476690 (pm 6.683298, prep 1.401651 m2l 0.000000 adptv_task 0.000000 task 63.272308)
+     7 head_r     0 dt : dom 0.661513, bnd 4.176630, adptv 57.148529, gr 39.483235 (pm 6.722103, prep 1.418893 m2l 0.000000 adptv_task 0.000000 task 62.614127)
+    16 head_r     3 dt : dom 0.658325, bnd 4.291371, adptv 57.117211, gr 39.376491 (pm 6.674215, prep 1.437955 m2l 0.000000 adptv_task 0.000000 task 63.251484)
+     9 head_r     3 dt : dom 0.657000, bnd 4.185170, adptv 57.154677, gr 39.483820 (pm 6.438023, prep 1.451758 m2l 0.000001 adptv_task 0.000000 task 57.555497)
+    14 head_r     0 dt : dom 0.658917, bnd 4.192986, adptv 57.117762, gr 39.470256 (pm 6.470968, prep 1.427539 m2l 0.000000 adptv_task 0.000000 task 58.036389)
+    19 head_r    18 dt : dom 0.649704, bnd 4.239084, adptv 57.093322, gr 39.430228 (pm 6.348527, prep 1.486979 m2l 0.000000 adptv_task 0.000000 task 58.254015)
+    15 head_r     3 dt : dom 0.658465, bnd 4.180761, adptv 57.126703, gr 39.489044 (pm 6.818402, prep 1.337400 m2l 0.000000 adptv_task 0.000000 task 62.589545)
+    13 head_r     0 dt : dom 0.664703, bnd 4.142322, adptv 57.115099, gr 39.524376 (pm 6.323875, prep 1.431263 m2l 0.000000 adptv_task 0.000000 task 64.437551)
+    26 head_r    18 dt : dom 0.654155, bnd 4.266802, adptv 57.072320, gr 39.407044 (pm 6.594084, prep 1.476228 m2l 0.000000 adptv_task 0.000000 task 62.817437)
+    12 head_r     0 dt : dom 0.659949, bnd 4.193484, adptv 57.120297, gr 39.475421 (pm 6.426691, prep 1.454084 m2l 0.000000 adptv_task 0.000000 task 64.437259)
+     2 head_r     0 dt : dom 0.657670, bnd 4.174144, adptv 57.175679, gr 39.493062 (pm 6.677538, prep 1.398487 m2l 0.000000 adptv_task 0.000000 task 62.672098)
+     1 head_r     0 dt : dom 0.660826, bnd 4.171973, adptv 57.179206, gr 39.501628 (pm 6.426372, prep 1.440277 m2l 0.000000 adptv_task 0.000000 task 63.719690)
+     5 head_r     3 dt : dom 0.649594, bnd 4.163783, adptv 57.175886, gr 39.511892 (pm 6.585767, prep 1.465930 m2l 0.000000 adptv_task 0.000000 task 52.937233)
+    17 head_r     3 dt : dom 0.658770, bnd 4.174223, adptv 57.116112, gr 39.500924 (pm 6.452989, prep 1.407485 m2l 0.000000 adptv_task 0.000000 task 62.653614)
+    11 head_r     3 dt : dom 0.663901, bnd 4.178219, adptv 57.132347, gr 39.497478 (pm 6.449331, prep 1.452697 m2l 0.000000 adptv_task 0.000000 task 63.328152)
+     8 head_r     0 dt : dom 0.670518, bnd 4.195972, adptv 57.118573, gr 39.482109 (pm 6.696730, prep 1.421202 m2l 0.000000 adptv_task 0.000000 task 62.838894)
+     4 head_r     3 dt : dom 0.655018, bnd 4.182345, adptv 57.178129, gr 39.501099 (pm 9.221540, prep 1.421792 m2l 0.000000 adptv_task 0.000000 task 47.491235)
+     6 head_r     0 dt : dom 0.653024, bnd 4.176981, adptv 57.177464, gr 39.505613 (pm 6.590432, prep 1.420611 m2l 0.000000 adptv_task 0.000000 task 63.545080)
+    34 head_r    21 dt : dom 0.623128, bnd 4.245946, adptv 57.051185, gr 39.493279 (pm 6.350601, prep 1.476168 m2l 0.000000 adptv_task 0.000000 task 59.371599)
+    29 head_r    21 dt : dom 0.620337, bnd 4.255243, adptv 57.057469, gr 39.488211 (pm 6.469612, prep 1.475335 m2l 0.000000 adptv_task 0.000000 task 63.827583)
+    20 head_r    18 dt : dom 0.610212, bnd 4.285810, adptv 57.129738, gr 39.457002 (pm 6.452268, prep 1.492009 m2l 0.000000 adptv_task 0.000000 task 58.238775)
+    27 head_r    21 dt : dom 0.610383, bnd 4.268560, adptv 57.079610, gr 39.475901 (pm 6.589213, prep 1.425717 m2l 0.000000 adptv_task 0.000000 task 63.874856)
+    22 head_r    21 dt : dom 0.614781, bnd 4.287897, adptv 57.083675, gr 39.460031 (pm 9.254819, prep 1.349450 m2l 0.000001 adptv_task 0.000000 task 48.518929)
+    30 head_r    18 dt : dom 0.621913, bnd 4.219643, adptv 57.104100, gr 39.527289 (pm 6.698806, prep 1.337140 m2l 0.000001 adptv_task 0.000000 task 63.763835)
+    23 head_r    21 dt : dom 0.624204, bnd 4.259088, adptv 57.072084, gr 39.493842 (pm 6.508636, prep 1.473947 m2l 0.000000 adptv_task 0.000000 task 64.066753)
+    31 head_r    18 dt : dom 0.617725, bnd 4.209753, adptv 57.110558, gr 39.535328 (pm 6.534406, prep 1.460793 m2l 0.000000 adptv_task 0.000000 task 63.562834)
+    25 head_r    18 dt : dom 0.619865, bnd 4.249413, adptv 57.117279, gr 39.498898 (pm 6.587631, prep 1.399325 m2l 0.000000 adptv_task 0.000000 task 59.043261)
+    33 head_r    21 dt : dom 0.631016, bnd 4.219789, adptv 57.041721, gr 39.537378 (pm 6.264342, prep 1.478887 m2l 0.000000 adptv_task 0.000000 task 64.392413)
+    32 head_r    18 dt : dom 0.622255, bnd 4.239367, adptv 57.101230, gr 39.510663 (pm 6.342333, prep 1.477559 m2l 0.000000 adptv_task 0.000000 task 64.777187)
+    28 head_r    21 dt : dom 0.609617, bnd 4.261091, adptv 57.071795, gr 39.498156 (pm 6.670583, prep 1.366322 m2l 0.000000 adptv_task 0.000000 task 63.330370)
+    24 head_r    18 dt : dom 0.602056, bnd 4.263351, adptv 57.139418, gr 39.489911 (pm 6.284614, prep 1.456492 m2l 0.000000 adptv_task 0.000000 task 63.966551)
+ [0] LOOP TIME = 44.833766 ( 98.071858 ) SEC  
+ STEP 3   
+
+    35 head_r    21 dt : dom 0.612241, bnd 4.244313, adptv 57.058746, gr 39.518166 (pm 6.410934, prep 1.499882 m2l 0.000001 adptv_task 0.000000 task 59.123593)
+
+
+  * * *  * * *  PHOTONS-3 COMPLETE !  * * *  * * *
+
+  *  MASSPART = 3.216026e+08 [Msun/h]
+  *  BOX SIZE = 125558.039062 [kpc/h]
+  *  OMEGA_M  = 0.311100
+  *  OMEGA_X  = 0.688900
+  *  HUBBLE0  = 0.676600
+  *  Rsoften  = 3.100199 [kpc/h]
+
