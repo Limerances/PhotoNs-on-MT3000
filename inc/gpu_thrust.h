@@ -8,15 +8,37 @@
 int device_cnt;
 int* device_ids;
 
+template <typename T>
+struct DevAllocator {
+    using value_type = T;
+
+    DevAllocator() {}
+
+    T* allocate(std::size_t n) {
+        T* ptr = nullptr;
+        checkDevErrors(devMalloc((void**)&ptr, sizeof(T) * n));
+        return ptr;
+    }
+
+    void deallocate(T* p, std::size_t) {
+        devFree(p);
+    }
+
+    template<typename U>
+    struct rebind {
+        typedef DevAllocator<U> other;
+    };
+};
+
 // Copy data onto the GPU
 // tasks
-std::vector<thrust::device_vector<int> > d_keys;
-std::vector<thrust::device_vector<int> > d_values;
-std::vector<thrust::device_vector<int> > d_one;
+std::vector<thrust::host_vector<int, DevAllocator<int>> > d_keys;
+std::vector<thrust::host_vector<int, DevAllocator<int>> > d_values;
+std::vector<thrust::host_vector<int, DevAllocator<int>> > d_one;
 // leaf
-std::vector<thrust::device_vector<int> > d_inodes;
-std::vector<thrust::device_vector<int> > d_nn;
-std::vector<thrust::device_vector<int> > d_in;
+std::vector<thrust::host_vector<int, DevAllocator<int>> > d_inodes;
+std::vector<thrust::host_vector<int, DevAllocator<int>> > d_nn;
+std::vector<thrust::host_vector<int, DevAllocator<int>> > d_in;
 std::vector<int*> d_leaf_ip;
 std::vector<int*> d_leaf_np;
 // particle
